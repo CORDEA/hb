@@ -1,5 +1,7 @@
 # hb
 
+Command to get entries and comments from the Hatena bookmark.
+
 ## Usage
 
 ```sh
