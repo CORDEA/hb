@@ -28,7 +28,16 @@ let request_type = ref None
 
 let options = ref []
 
-let usage = ""
+let usage = "
+Get entries and comments from the Hatena bookmark.
+
+Usage: hb [--help] <command> [options] [args]
+
+Commands:
+
+  entry      Get entries
+  comment    Get comments
+"
 
 let request url =
     let headers = Cohttp.Header.of_list [
@@ -56,13 +65,15 @@ let () =
     Arg.parse_dynamic options parse usage;
     match !request_type with
     | Comment ->
-            Lwt_main.run (request (Comment.url ()))
-                |> Comment.parse
-                |> List.iter (print_endline)
+            if Comment.runnable () then
+                Lwt_main.run (request (Comment.url ()))
+                    |> Comment.parse
+                    |> List.iter (print_endline)
     | Entry ->
-            Lwt_main.run (request (Entry.url ()))
-                |> Entry.parse
-                |> List.iter (print_endline)
+            if Entry.runnable () then
+                Lwt_main.run (request (Entry.url ()))
+                    |> Entry.parse
+                    |> List.iter (print_endline)
     | None ->
             raise (Arg.Bad "")
 ;;

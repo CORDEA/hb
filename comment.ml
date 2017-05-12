@@ -18,6 +18,8 @@
 
 module Comment : sig
 
+    val runnable : unit -> bool
+
     val url : unit -> string
 
     val request_url : string -> unit
@@ -32,6 +34,19 @@ struct
     open Yojson.Basic.Util
 
     type comment = { mutable url : string; mutable count : int; }
+
+    let usage = "
+Usage: hb comment [options] url
+
+Options:
+
+  -c    Number of comments (default 10)
+"
+
+    let is_help = ref false
+
+    let runnable () =
+        !is_help = false
 
     let comment_base_url =
         "http://b.hatena.ne.jp/entry/jsonlite/"
@@ -50,7 +65,17 @@ struct
 
     let comment_options = [
             ("-c",
-                Arg.Int (function v -> comment.count <- v),
+                Arg.Int (fun v -> comment.count <- v),
+                "");
+            ("-help",
+                Arg.Unit (fun () ->
+                    is_help := true;
+                    print_endline usage),
+                "");
+            ("--help",
+                Arg.Unit (fun () ->
+                    is_help := true;
+                    print_endline usage),
                 "");
         ]
 

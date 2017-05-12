@@ -18,6 +18,8 @@
 
 module Entry : sig
 
+    val runnable : unit -> bool
+
     val url : unit -> string
 
     val entry_options : (string * Arg.spec * string) list
@@ -31,6 +33,20 @@ struct
     type category = All | Social | Economics | Life | Knowledge | It | Entertainment | Game | Fun | Video
 
     type entry = { mutable count : int; mutable category: category; }
+
+    let usage = "
+Usage: hb entry [options]
+
+Options:
+
+  -c    Number of entries (default 10)
+  -t    Entry type (default all)
+"
+
+    let is_help = ref false
+
+    let runnable () =
+        !is_help = false
 
     let category_string cat =
         match cat with
@@ -65,7 +81,7 @@ struct
 
     let entry_options = [
         ("-c",
-            Arg.Int (function v -> entry.count <- v),
+            Arg.Int (fun v -> entry.count <- v),
             "");
         ("-t",
             Arg.String (function
@@ -80,6 +96,16 @@ struct
                 | "fun" -> entry.category <- Fun
                 | "video" -> entry.category <- Video
                 | _ -> raise (Arg.Bad "")),
+            "");
+        ("-help",
+            Arg.Unit (fun () ->
+                is_help := true;
+                print_endline usage),
+            "");
+        ("--help",
+            Arg.Unit (fun () ->
+                is_help := true;
+                print_endline usage),
             "");
     ]
 
